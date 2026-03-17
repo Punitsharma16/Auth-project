@@ -59,6 +59,8 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/auth/v1/refresh","/auth/v1/logoutRefreshToken"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET).hasRole(APPConstants.GUEST_ROLE)
+                        .requestMatchers("/api/v1/users").hasRole(APPConstants.ADMIN_ROLE)
                         .anyRequest().authenticated()
                 ).oauth2Login(oauth2->
                         oauth2.successHandler(authenticationSuccessHandler)
