@@ -3,9 +3,9 @@ spring:
     name: auth-app
 
   datasource:
-    url: jdbc:mysql://localhost:3306/Auth
+    url: jdbc:mysql://localhost:3306/vanshika
     username: root
-    password: "redhat"
+    password: "Vcp@18209"
 
   jpa:
     hibernate:

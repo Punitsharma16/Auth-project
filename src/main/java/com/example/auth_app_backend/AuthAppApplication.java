@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.UUID;
 
 @SpringBootApplication
-public class AuthAppApplication implements CommandLineRunner {
+public class AuthAppApplication  {
 	@Autowired
 private RoleRepository roleRepository;
 
@@ -20,27 +20,25 @@ private RoleRepository roleRepository;
 		SpringApplication.run(AuthAppApplication.class, args);
 	}
 
-	@Override
-	public void run(String... args) throws Exception {
+//	@Override
+//	public void run(String... args) throws Exception {
 
 		// we  will create some default user Roles
 		//Admin
 		//Guest
-		roleRepository.findByName("ROLE"+APPConstants.ADMIN_ROLE).ifPresentOrElse(role ->{
-		},()->{
-			Role role=new Role();
-			role.setName("ROLE"+APPConstants.ADMIN_ROLE);
-			role.setId(UUID.randomUUID());
-			roleRepository.save(role);
-		});
-		roleRepository.findByName("ROLE"+APPConstants.GUEST_ROLE).ifPresentOrElse(role ->{
-		},()->{
-			Role role=new Role();
-			role.setName("ROLE"+APPConstants.GUEST_ROLE);
-			role.setId(UUID.randomUUID());
-			roleRepository.save(role);
-		});
-	}
+//		roleRepository.findByName("ROLE"+APPConstants.ADMIN_ROLE).ifPresentOrElse(role ->{
+//		},()->{
+//			Role role=new Role();
+//			role.setName("ROLE"+APPConstants.ADMIN_ROLE);
+// 			roleRepository.save(role);
+//		});
+//		roleRepository.findByName("ROLE"+APPConstants.GUEST_ROLE).ifPresentOrElse(role ->{
+//		},()->{
+//			Role role=new Role();
+//			role.setName("ROLE"+APPConstants.GUEST_ROLE);
+// 			roleRepository.save(role);
+//		});
+//	}
 
 
 

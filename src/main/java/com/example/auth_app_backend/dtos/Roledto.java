@@ -13,7 +13,5 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Roledto {
-
-    private UUID id=UUID.randomUUID();
     private String name;
 }

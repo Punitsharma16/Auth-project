@@ -15,16 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class UserDto {
-    private UUID id;
     private String email;
     private String password;
     private String name;
     private String image;
     private boolean isEnable=true;
     private boolean isAdmin;
+    private String phone;
     private Instant createAt=Instant.now();
     private Instant updateAt=Instant.now();
     private Provider provider;
-
     private Set<Roledto> roles= new HashSet<>();
 }

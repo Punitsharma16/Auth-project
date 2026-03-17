@@ -34,6 +34,8 @@ public class User implements UserDetails {
     private Instant createAt=Instant.now();
     private Instant updateAt=Instant.now();
     private String image;
+    @Column(name = "phone", length = 20, unique = true)
+    private String phone;
     @Enumerated(EnumType.STRING)
     private Provider provider;
     @ManyToMany(fetch = FetchType.EAGER)

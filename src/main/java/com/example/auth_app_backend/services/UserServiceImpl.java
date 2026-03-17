@@ -1,10 +1,15 @@
 package com.example.auth_app_backend.services;
 
 import com.example.auth_app_backend.Utils.UserHelper;
+import com.example.auth_app_backend.config.APPConstants;
+import com.example.auth_app_backend.dtos.AccountMaster;
 import com.example.auth_app_backend.dtos.UserDto;
 import com.example.auth_app_backend.entities.Provider;
+import com.example.auth_app_backend.entities.Role;
 import com.example.auth_app_backend.entities.User;
 import com.example.auth_app_backend.exception.ResourceNotFoundException;
+import com.example.auth_app_backend.repositories.AccountRepository;
+import com.example.auth_app_backend.repositories.RoleRepository;
 import com.example.auth_app_backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -14,14 +19,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.time.Instant;
+import java.util.*;
+
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     UserRepository userRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    AccountRepository accountRepository;
+    @Autowired
+    RoleRepository roleRepository;
 
     @Override
     @Transactional
@@ -33,9 +43,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new IllegalArgumentException("Email Already Existed");
         }
        User user= modelMapper.map(userDto, User.class);
+        user.setId(null);   // 🔥 MOST IMPORTANT LINE
         user.setProvider(userDto.getProvider()!=null?userDto.getProvider(): Provider.LOCAL);
         //role assign here to user  for authorization
+        Role role = roleRepository.findByName("ROLE_" + APPConstants.GUEST_ROLE)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
         User savedUser=userRepository.save(user);
+        // generate dynamic account number
+        Long accountNumber = 10000 + new Random().nextLong(90000);
+        // ACCOUNT SAVE (SQL)
+        AccountMaster account = AccountMaster.builder()
+                .accountId("ACC_" + UUID.randomUUID())
+                .accountNumber(accountNumber)
+                .fullname(userDto.getName())
+                .createBy(savedUser.getId().toString())
+                .updateBy(savedUser.getId().toString())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .logo(userDto.getImage())
+                .company("companyname")
+                .active(true)
+                .hasTwoStepAuthencation(false)
+                .createAt(Instant.now())
+                .updateAt(Instant.now())
+                .user(savedUser)
+                .build();
+
+        accountRepository.save(account);
+
         return modelMapper.map(savedUser, UserDto.class);
     }
 
