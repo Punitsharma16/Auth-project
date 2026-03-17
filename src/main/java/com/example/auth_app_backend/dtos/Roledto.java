@@ -14,4 +14,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Roledto {
     private String name;
+
 }
