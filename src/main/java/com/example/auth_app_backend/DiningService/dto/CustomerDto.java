@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class CustomerDto {
 
-    private UUID id;
+    private Long id;
     private String name;
     private String mobile;
     private String email;
