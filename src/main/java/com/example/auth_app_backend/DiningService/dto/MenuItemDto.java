@@ -4,10 +4,14 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MenuItemDto {
 
-    private UUID id;
+    private Long id;
     private String itemCode;
     private String name;
     private String description;
