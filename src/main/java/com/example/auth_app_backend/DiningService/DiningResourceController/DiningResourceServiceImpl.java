@@ -3,7 +3,9 @@ package com.example.auth_app_backend.DiningService.DiningResourceController;
 import com.example.auth_app_backend.DiningService.dto.DiningResourceDto;
 import com.example.auth_app_backend.DiningService.entity.DiningResource;
 import com.example.auth_app_backend.DiningService.entity.ResourceType;
+import com.example.auth_app_backend.S3Config.QRCODES3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,10 @@ public class DiningResourceServiceImpl implements DiningResourceService{
     DiningResourceRepository diningResourceRepository;
     @Autowired
     DisplayIdGenerator displayIdGenerator;
+    @Autowired
+    QRCODES3Service qrCodeS3Service;
+    @Value("${app.base.url}")
+    private String baseUrl;
     @Override
     public DiningResourceDto create(DiningResourceDto request) {
         if (diningResourceRepository.existsByResourceTypeAndNumber(
@@ -36,7 +42,18 @@ public class DiningResourceServiceImpl implements DiningResourceService{
         String displayId= displayIdGenerator.generate(saved.getResourceType(),saved.getId());
         saved.setDisplayId(displayId);
         saved = diningResourceRepository.save(saved);
-
+        try {
+            String menuUrl = baseUrl + "/menu.html";
+            String qrUrl = qrCodeS3Service.generateAndUploadQR(
+                    saved.getDisplayId(),
+                    menuUrl
+            );
+            saved.setQrCodeUrl(qrUrl);
+            saved = diningResourceRepository.save(saved);
+        } catch (Exception e) {
+            // QR fail ho toh room creation fail na ho
+            System.err.println("QR generation failed: " + e.getMessage());
+        }
         return map(saved);
 
     }
@@ -49,8 +66,7 @@ public class DiningResourceServiceImpl implements DiningResourceService{
                 .isOccupied(entity.isOccupied())
                 .resourceType(entity.getResourceType())
                 .qrUrl(
-                        "https://restaurant.com/menu/"
-                                + entity.getDisplayId())
+                         entity.getQrCodeUrl())
                 .build();
     }
     @Override

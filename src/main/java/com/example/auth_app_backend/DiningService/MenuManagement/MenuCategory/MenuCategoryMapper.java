@@ -2,7 +2,9 @@ package com.example.auth_app_backend.DiningService.MenuManagement.MenuCategory;
 
 import com.example.auth_app_backend.DiningService.dto.MenuCategoryDto;
 import com.example.auth_app_backend.DiningService.entity.MenuCategory;
+import org.mapstruct.Mapper;
 
+@Mapper(componentModel = "spring")
 public class MenuCategoryMapper {
     MenuCategoryDto toDto(MenuCategory entity){
         return MenuCategoryDto.builder()

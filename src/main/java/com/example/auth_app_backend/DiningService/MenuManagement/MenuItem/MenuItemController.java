@@ -1,5 +1,6 @@
 package com.example.auth_app_backend.DiningService.MenuManagement.MenuItem;
 
+import com.example.auth_app_backend.DiningService.dto.MenuCategoryDto;
 import com.example.auth_app_backend.DiningService.dto.MenuItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,6 @@ import java.util.UUID;
 public class MenuItemController {
     @Autowired
 MenuItemService menuItemService;
-//    MenuItemController
-//
-//    POST   /api/menu/items
-//    GET    /api/menu/items
-//    GET    /api/menu/items/{id}
-//    PUT    /api/menu/items/{id}
-//    DELETE /api/menu/items/{id}
-//    PATCH  /api/menu/items/{id}/availability
-
     @PostMapping("/create")
     public ResponseEntity<MenuItemDto> create(@RequestBody MenuItemDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuItemService.createMenuItem(dto));
@@ -41,7 +33,7 @@ MenuItemService menuItemService;
     }
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<MenuItemDto>> getByCategory(@PathVariable UUID categoryId) {
-        return ResponseEntity.ok(menuItemService.getMenuItemsByCategory(categoryId));
+        return ResponseEntity.ok(menuItemService.getMenuItemsByCategory(String.valueOf(categoryId)));
     }
     @GetMapping("/available")
     public ResponseEntity<List<MenuItemDto>> getAvailable() {
@@ -60,6 +52,10 @@ MenuItemService menuItemService;
     @PatchMapping("/{id}/toggle-availability")
     public ResponseEntity<MenuItemDto> toggleAvailability(@PathVariable UUID id) {
         return ResponseEntity.ok(menuItemService.toggleAvailability(id));
+    }
+    @GetMapping("/public")
+    public ResponseEntity<List<MenuCategoryDto>> getFullMenu() {
+        return ResponseEntity.ok(menuItemService.getFullMenu());
     }
 
 

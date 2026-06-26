@@ -1,5 +1,6 @@
 package com.example.auth_app_backend.DiningService.MenuManagement.MenuItem;
 
+import com.example.auth_app_backend.DiningService.dto.MenuCategoryDto;
 import com.example.auth_app_backend.DiningService.dto.MenuItemDto;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface MenuItemService {
 
     MenuItemDto getMenuItemById(UUID id);
 
-  List<MenuItemDto> getMenuItemsByCategory(UUID categoryId);
+  List<MenuItemDto> getMenuItemsByCategory(String categoryId);
 
     List<MenuItemDto> getAvailableMenuItems();
 
@@ -21,4 +22,6 @@ public interface MenuItemService {
     void deleteMenuItem(UUID id);
 
     MenuItemDto toggleAvailability(UUID id);
+
+    List<MenuCategoryDto> getFullMenu();
 }

@@ -6,26 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RestController
+@RequestMapping("/menu/category")
 public class MenuCategoryController {
 @Autowired
 MenuCategoryService menuCategoryService;
-//    MenuCategoryController
-//
-//    POST   /api/menu/categories
-//    GET    /api/menu/categories
-//    GET    /api/menu/categories/{id}
-//    PUT    /api/menu/categories/{id}
-//    DELETE /api/menu/categories/{id}
-
-
-    @PostMapping
+ @PostMapping("/create")
     public ResponseEntity<MenuCategoryDto> create(@RequestBody MenuCategoryDto dto) {
         return ResponseEntity.ok(menuCategoryService.create(dto));
     }
 
 
-    @GetMapping
+    @GetMapping("/getallCategory")
     public ResponseEntity<List<MenuCategoryDto>> getAll() {
 
         return ResponseEntity.ok(menuCategoryService.getAll());

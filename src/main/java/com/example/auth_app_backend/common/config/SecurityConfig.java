@@ -63,7 +63,13 @@ public class SecurityConfig {
                                 "/auth/v1/register",
                                 "/auth/v1/login",
                                 "/oauth2/**",
+                                 "/api/menu/public",
+                                 "/api/resources",
                                 "/auth/v1/refresh","/auth/v1/logoutRefreshToken"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/menu-items/public",
+                                "/menu.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 ).oauth2Login(oauth2->

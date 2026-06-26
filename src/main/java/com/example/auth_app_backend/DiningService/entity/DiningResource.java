@@ -42,6 +42,8 @@ public class DiningResource {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+    @Column
+    private String qrCodeUrl;
 
     @PrePersist
     protected void onCreate() {

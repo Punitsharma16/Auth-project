@@ -1,18 +1,20 @@
 package com.example.auth_app_backend.DiningService.MenuManagement.MenuItem;
 
 import com.example.auth_app_backend.DiningService.MenuManagement.MenuCategory.MenuCategoryRepository;
+import com.example.auth_app_backend.DiningService.dto.MenuCategoryDto;
 import com.example.auth_app_backend.DiningService.dto.MenuItemDto;
 import com.example.auth_app_backend.DiningService.entity.MenuCategory;
 import com.example.auth_app_backend.DiningService.entity.MenuItem;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+@Service
 public class MenuItemServiceImpl implements MenuItemService {
     @Autowired
     MenuCategoryRepository menuCategoryRepository;
@@ -23,7 +25,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Override
     public MenuItemDto createMenuItem(MenuItemDto dto) {
-        MenuCategory category = menuCategoryRepository.findById(String.valueOf(UUID.fromString(dto.getCategoryId())))
+        MenuCategory category = menuCategoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found: " + dto.getCategoryId()));
 
         MenuItem item = menuItemMapper.toEntity(dto);
@@ -50,7 +52,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MenuItemDto> getMenuItemsByCategory(UUID categoryId) {
+    public List<MenuItemDto> getMenuItemsByCategory(String categoryId) {
         return menuItemRepository.findByCategoryId(categoryId)
                 .stream().map(menuItemMapper::toDto).collect(Collectors.toList());
     }
@@ -80,6 +82,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         return menuItemMapper.toDto(menuItemRepository.save(existing));
 
     }
+
     @Override
     public void deleteMenuItem(UUID id) {
         menuItemRepository.delete(findOrThrow(id));
@@ -91,6 +94,45 @@ public class MenuItemServiceImpl implements MenuItemService {
         item.setAvailable(!item.isAvailable());
         return menuItemMapper.toDto(menuItemRepository.save(item));
     }
+
+    @Override
+    public List<MenuCategoryDto> getFullMenu() {
+        List<MenuCategory> categories = menuCategoryRepository.findAll();
+
+         return categories.stream()
+                .map(category -> {
+                    List<MenuItem> items = menuItemRepository
+                            .findByCategory_Id(category.getId());
+
+                    List<MenuItemDto> itemDtos = items.stream()
+                            .map(item -> MenuItemDto.builder()
+                                    .id(item.getId())
+                                    .itemCode(item.getItemCode())
+                                    .name(item.getName())
+                                    .description(item.getDescription())
+                                    .price(item.getPrice())
+                                    .image(item.getImage())
+                                    .categoryId(category.getId())
+                                    .categoryName(category.getName())
+                                    .isVeg(item.isVeg())
+                                    .isAvailable(item.isAvailable())
+                                    .rating(item.getRating())
+                                    .preparationTime(item.getPreparationTime())
+                                    .build()
+                            ).collect(Collectors.toList());
+
+                    return MenuCategoryDto.builder()
+                            .id(category.getId())
+                            .name(category.getName())
+                            .icon(category.getIcon())
+                            .items(itemDtos)
+                            .build();
+                }).collect(Collectors.toList());
+
+
+    }
+
+
 
 
 }
