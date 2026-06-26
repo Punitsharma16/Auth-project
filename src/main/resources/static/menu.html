@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+
+        .header {
+            background: #ff6b35;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .category {
+            margin: 15px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .category-header {
+            background: #fff3ee;
+            padding: 12px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b35;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .menu-item {
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-item:last-child { border-bottom: none; }
+
+        .item-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .item-info { flex: 1; }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-desc {
+            font-size: 13px;
+            color: #888;
+            margin: 4px 0;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .item-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .veg-badge {
+            border: 2px solid;
+            width: 18px;
+            height: 18px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .veg { border-color: green; }
+        .veg::after { content: "●"; color: green; font-size: 10px; }
+        .non-veg { border-color: red; }
+        .non-veg::after { content: "●"; color: red; font-size: 10px; }
+
+        .unavailable { opacity: 0.4; }
+
+        .prep-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">🍽️ Our Menu</div>
+<div id="menu-container" class="loading">Loading menu...</div>
+
+<script>
+    const API_URL = "http://192.168.1.3:8080/api/menu-items/public";
+
+    async function loadMenu() {
+        try {
+            const response = await fetch(API_URL);
+            const categories = await response.json();
+
+            const container = document.getElementById("menu-container");
+            container.innerHTML = "";
+            container.className = "";
+
+            if (categories.length === 0) {
+                container.innerHTML = "<p class='loading'>No menu available</p>";
+                return;
+            }
+
+            categories.forEach(category => {
+                const categoryDiv = document.createElement("div");
+                categoryDiv.className = "category";
+
+                categoryDiv.innerHTML = `
+                    <div class="category-header">
+                        ${category.icon || "🍴"} ${category.name}
+                    </div>
+                `;
+
+                category.items.forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = `menu-item ${!item.available ? "unavailable" : ""}`;
+
+                    itemDiv.innerHTML = `
+                        ${item.image
+                            ? `<img class="item-image" src="${item.image}" alt="${item.name}">`
+                            : ""
+                        }
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-desc">${item.description || ""}</div>
+                            <div class="item-footer">
+                                <span class="item-price">₹${item.price}</span>
+                                <div style="display:flex; gap:8px; align-items:center">
+                                    <span class="prep-time">⏱ ${item.preparationTime} min</span>
+                                    <div class="veg-badge ${item.veg ? "veg" : "non-veg"}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                container.appendChild(categoryDiv);
+            });
+
+        } catch (error) {
+            document.getElementById("menu-container").innerHTML =
+                "<p class='loading'>Failed to load menu. Please try again.</p>";
+        }
+    }
+
+    loadMenu();
+</script>
+</body>
+</html>
