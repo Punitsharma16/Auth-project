@@ -63,7 +63,13 @@ public class SecurityConfig {
                                 "/auth/v1/register",
                                 "/auth/v1/login",
                                 "/oauth2/**",
+                                 "/api/menu/public",
+                                 "/api/resources",
                                 "/auth/v1/refresh","/auth/v1/logoutRefreshToken"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/menu-items/public",
+                                "/menu.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 ).oauth2Login(oauth2->
@@ -99,7 +105,7 @@ public class SecurityConfig {
      public CorsConfigurationSource corsConfigurationSource() {
          CorsConfiguration config = new CorsConfiguration();
 
-         config.setAllowedOrigins(List.of("http://localhost:5000"));
+         config.setAllowedOrigins(List.of("http://localhost:5000" , "http://192.168.29.76:5000/"));
          config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
          config.setAllowedHeaders(List.of("*"));
          config.setAllowCredentials(true);

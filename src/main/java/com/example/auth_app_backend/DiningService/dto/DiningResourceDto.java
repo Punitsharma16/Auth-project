@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class DiningResourceDto {
 
-    private UUID id;
+    private long id;
     private ResourceType resourceType;
     private String number;
     private String displayId;
@@ -16,4 +16,5 @@ public class DiningResourceDto {
     private Integer capacity;
     private String roomType;
     private Integer floor;
+    private String qrUrl;
 }
